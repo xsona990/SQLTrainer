@@ -81,7 +81,7 @@ namespace SQLTrainer
 
         private void ReturnToDefault_Click(object sender, RoutedEventArgs e)
         {
-
+            DB.ReturnToDefault();
         }
 
         private void Table2CB_SelectionChanged(object sender, SelectionChangedEventArgs e)
