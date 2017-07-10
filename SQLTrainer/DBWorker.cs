@@ -14,7 +14,8 @@ namespace SQLTrainer
         private String dbFileName;
         private SQLiteConnection dbConn;
         private SQLiteCommand sqlCmd;
-
+        private SQLiteDataReader reader;
+        private SQLiteDataAdapter adapter;
         internal DBWorker()
         {
             this.dbFileName = "test.sqlite";
@@ -26,12 +27,25 @@ namespace SQLTrainer
 
         public DataTable GetTable(string TableName)
         {
-            return null;
+            DataTable DT = new DataTable();
+            dbConn.Open();
+            sqlCmd = dbConn.CreateCommand();
+            sqlCmd.CommandText = string.Format("SELECT * FROM {0}", TableName);
+            adapter = new SQLiteDataAdapter(sqlCmd);
+            adapter.AcceptChangesDuringFill = false;
+            adapter.Fill(DT);
+            dbConn.Close();
+            DT.TableName = TableName;
+            foreach (DataRow row in DT.Rows)
+            {
+                row.AcceptChanges();
+            }
+            return DT;
         }
 
-        public string Initalize()
+        private void Initalize()
         {
-            string error = "0";
+           
             if (!File.Exists(dbFileName))
                 SQLiteConnection.CreateFile(dbFileName);
             try
@@ -41,16 +55,17 @@ namespace SQLTrainer
                 sqlCmd.Connection = dbConn;
                 sqlCmd.CommandText = "CREATE TABLE IF NOT EXISTS `users` (`user_id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,	`username`	TEXT); CREATE TABLE IF NOT EXISTS`userdata` (`phone_id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,`user_id`	INTEGER NOT NULL, `phone_number`	INTEGER NOT NULL); CREATE TABLE IF NOT EXISTS `userrooms` (`room_id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, `phone_id`	INTEGER NOT NULL, `room_number`	INTEGER NOT NULL);";
                 sqlCmd.ExecuteNonQuery();
-                sqlCmd.CommandText = "INSERT INTO users ('username') VALUES ('foo'); INSERT INTO users('username') VALUES('bar'); INSERT INTO users('username') VALUES('baz'); INSERT INTO users('username') VALUES('qux'); INSERT INTO userdata('user_id', 'phone_number') VALUES('2', '200'); INSERT INTO userdata('user_id', 'phone_number') VALUES('4', '201'); INSERT INTO userdata('user_id', 'phone_number') VALUES('3', '202'); INSERT INTO userdata('user_id', 'phone_number') VALUES('1', '203'); INSERT INTO userrooms('phone_id', 'room_number') VALUES('4', '30'); INSERT INTO userrooms('phone_id', 'room_number') VALUES('1', '32'); INSERT INTO userrooms('phone_id', 'room_number') VALUES('2', '35'); INSERT INTO userrooms('phone_id', 'room_number') VALUES('3', '50'); ";
-                sqlCmd.ExecuteNonQuery();
+                if (!GetAllTableNames().Contains("users") && !GetAllTableNames().Contains("userdata")&& !GetAllTableNames().Contains("userrooms"))
+                {
+                    sqlCmd.CommandText = "INSERT INTO users ('username') VALUES ('foo'); INSERT INTO users('username') VALUES('bar'); INSERT INTO users('username') VALUES('baz'); INSERT INTO users('username') VALUES('qux'); INSERT INTO userdata('user_id', 'phone_number') VALUES('2', '200'); INSERT INTO userdata('user_id', 'phone_number') VALUES('4', '201'); INSERT INTO userdata('user_id', 'phone_number') VALUES('3', '202'); INSERT INTO userdata('user_id', 'phone_number') VALUES('1', '203'); INSERT INTO userrooms('phone_id', 'room_number') VALUES('4', '30'); INSERT INTO userrooms('phone_id', 'room_number') VALUES('1', '32'); INSERT INTO userrooms('phone_id', 'room_number') VALUES('2', '35'); INSERT INTO userrooms('phone_id', 'room_number') VALUES('3', '50'); ";
+                    sqlCmd.ExecuteNonQuery();
+                }           
                 dbConn.Close();
             }
             catch (SQLiteException ex)
             {
-                error = ex.ToString();
-                // MessageBox.Show("Error: " + ex.Message);
+                throw;
             }
-            return error;
         }
 
         internal List<string> GetAllTableNames()
@@ -62,7 +77,7 @@ namespace SQLTrainer
                 dbConn.Open();
                 sqlCmd.Connection = dbConn;
                 sqlCmd.CommandText = "SELECT name FROM sqlite_master WHERE type = 'table' AND name <> 'sqlite_sequence' ORDER BY name; ";
-                using (SQLiteDataReader reader = sqlCmd.ExecuteReader())
+                using (reader = sqlCmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {

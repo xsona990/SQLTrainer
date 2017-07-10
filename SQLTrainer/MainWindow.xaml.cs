@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,23 +32,6 @@ namespace SQLTrainer
 
 
         }
-
-
-        private List<string> Initalize()
-        {
-            List<string> a = DB.GetAllTableNames();
-            foreach (var item in a)
-            {
-                MessageBox.Show(item);
-                //Table1CB.ItemsSource = item;
-            }
-            return a;
-        }
-
-
-      
-
-
         private void ComboBox_Loaded(object sender, RoutedEventArgs e)
         {
             
@@ -86,11 +70,21 @@ namespace SQLTrainer
 
         private void Table2CB_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            ComboBox comboBox = (ComboBox)sender;
+     
+            DataTable DT = DB.GetTable(comboBox.SelectedItem.ToString());
+
+            Table2DG.ItemsSource = DT.DefaultView;
+
 
         }
         private void Table1CB_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            ComboBox comboBox = (ComboBox)sender;
 
+            DataTable DT = DB.GetTable(comboBox.SelectedItem.ToString());
+
+            Table1DG.ItemsSource = DT.DefaultView;
         }
     }
 }
