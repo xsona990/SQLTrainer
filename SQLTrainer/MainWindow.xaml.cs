@@ -22,20 +22,19 @@ namespace SQLTrainer
     public partial class MainWindow : Window
     {
         private DBWorker DB;
+        private GeneralFunctionality func;
         private int index = 0;
 
         public MainWindow()
         {   
             InitializeComponent();
             DB = new DBWorker();
-           
-
-
+            func = new GeneralFunctionality();
         }
         private void ComboBox_Loaded(object sender, RoutedEventArgs e)
         {
             
-            List<string> data = DB.GetAllTableNames();
+            List<string> data = func.GetAllTableNames();
 
             // ... Get the ComboBox reference.
             var comboBox = sender as ComboBox;
@@ -48,8 +47,14 @@ namespace SQLTrainer
             index++;
         }
 
+        public void ReloadTables()
+        {
+            DataTable DT = func.GetTable(Table1CB.SelectedItem.ToString());
+            Table1DG.ItemsSource = DT.DefaultView;
+             DT = func.GetTable(Table2CB.SelectedItem.ToString());
+            Table2DG.ItemsSource = DT.DefaultView;
 
-
+        }
 
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -61,30 +66,36 @@ namespace SQLTrainer
         private void Execute_Click(object sender, RoutedEventArgs e)
         {
 
+            DataTable DT = func.ExecuteStatement(SQLStatement.Text);
+            Table3DG.ItemsSource = DT.DefaultView;
+            ReloadTables();
         }
 
         private void ReturnToDefault_Click(object sender, RoutedEventArgs e)
         {
-            DB.ReturnToDefault();
+            func.ReturnToDefault();
+            //ReloadTables();
         }
-
         private void Table2CB_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ComboBox comboBox = (ComboBox)sender;
      
-            DataTable DT = DB.GetTable(comboBox.SelectedItem.ToString());
+            DataTable DT = func.GetTable(comboBox.SelectedItem.ToString());
 
             Table2DG.ItemsSource = DT.DefaultView;
-
-
         }
         private void Table1CB_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ComboBox comboBox = (ComboBox)sender;
 
-            DataTable DT = DB.GetTable(comboBox.SelectedItem.ToString());
+            DataTable DT = func.GetTable(comboBox.SelectedItem.ToString());
 
             Table1DG.ItemsSource = DT.DefaultView;
+        }
+
+        private void SQLStatement_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            SQLStatement.Text = "";
         }
     }
 }

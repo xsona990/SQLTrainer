@@ -118,6 +118,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DBWorker.cs" />
+    <Compile Include="GeneralFunctionality.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

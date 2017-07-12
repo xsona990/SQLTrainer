@@ -25,7 +25,7 @@ namespace SQLTrainer
         }
 
 
-        public DataTable GetTable(string TableName)
+        internal DataTable GetTable(string TableName)
         {
             DataTable DT = new DataTable();
             dbConn.Open();
@@ -40,6 +40,30 @@ namespace SQLTrainer
             {
                 row.AcceptChanges();
             }
+            return DT;
+        }
+
+        internal DataTable Execute(string SQLStatement)
+        {
+            DataTable DT = new DataTable();
+            try
+            { 
+                dbConn.Open();
+                sqlCmd = dbConn.CreateCommand();
+                sqlCmd.CommandText = SQLStatement;
+                adapter = new SQLiteDataAdapter(sqlCmd);
+                adapter.AcceptChangesDuringFill = false;
+                adapter.Fill(DT);
+                dbConn.Close();
+                foreach (DataRow row in DT.Rows)
+                {
+                    row.AcceptChanges();
+                }
+            }
+            catch (SQLiteException ex)
+            {
+
+            }         
             return DT;
         }
 
