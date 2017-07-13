@@ -26,7 +26,11 @@ namespace SQLTrainer
             FirstTimeLaunch();//При каждом создании обьекта класса, посредством метода проверяем есть ли БД.
         }
 
-
+        /// <summary>
+        /// Метод, выполняющий переданную команду
+        /// </summary>
+        /// <param name="SQLState"></param>
+        /// <returns></returns>
         internal DataTable ExecuteStatement(string SQLState)
         {
             DataTable ResultTable = new DataTable();
@@ -66,8 +70,6 @@ namespace SQLTrainer
             }
             catch (SQLiteException)
             {
-
-                throw;
             }
             return ResultTable;
         }
@@ -133,8 +135,9 @@ namespace SQLTrainer
             {
                 if (OpenConnection() == true)
                 {
+                    command.Connection = connection;
                     command.CommandText = "SELECT name FROM sqlite_master WHERE type = 'table' AND name <> 'sqlite_sequence' ORDER BY name; ";
-                    command.ExecuteNonQuery();
+                    //command.ExecuteNonQuery();
                     using (reader = command.ExecuteReader())
                     {
                         while (reader.Read())
@@ -147,11 +150,10 @@ namespace SQLTrainer
             }
             catch (SQLiteException)
             {
+                throw;
             }
             return DataBaseNames;
         }
-
-
 
         /// <summary>
         /// Метод, который проверяет наличие созданной базы данных, и таблиц с необходимыми данными в ней.

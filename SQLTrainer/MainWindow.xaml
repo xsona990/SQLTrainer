@@ -20,7 +20,7 @@
             <RowDefinition Height="40*"/>
 
         </Grid.RowDefinitions>
-        <TextBox x:Name="SQLStatement" TextWrapping="Wrap" Text="Введите запрос" ScrollViewer.CanContentScroll="True" Margin="10" Grid.ColumnSpan="2" MouseDoubleClick="SQLStatement_MouseDoubleClick"/>
+        <TextBox x:Name="SQLStatement" TextWrapping="Wrap" Text="Введите запрос" ScrollViewer.CanContentScroll="True" Margin="10" Grid.ColumnSpan="2" MouseDown="SQLStatement_MouseDoubleClick"/>
         <Button AutomationProperties.Name="ExecuteBtn"  Content="Execute SQL Statement" Grid.Column="2" Margin="5,5,5,5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="Execute_Click"/>
         <ComboBox x:Name="Table1CB"  Margin="5,5,5,5" Grid.Row="1" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" SelectionChanged="Table1CB_SelectionChanged"  Loaded="ComboBox_Loaded" FontSize="24" />
         <ComboBox x:Name="Table2CB"  Margin="5,5,5,5" Grid.Row="1" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" SelectionChanged="Table2CB_SelectionChanged"  Loaded="ComboBox_Loaded" FontSize="24"/>

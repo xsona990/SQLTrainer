@@ -21,21 +21,18 @@ namespace SQLTrainer
     /// </summary>
     public partial class MainWindow : Window
     {
-        private DBWorker DB;
         private GeneralFunctionality func;
         private int index = 0;
 
         public MainWindow()
         {   
             InitializeComponent();
-            DB = new DBWorker();
             func = new GeneralFunctionality();
         }
+
         private void ComboBox_Loaded(object sender, RoutedEventArgs e)
         {
-            
             List<string> data = func.GetAllTableNames();
-
             // ... Get the ComboBox reference.
             var comboBox = sender as ComboBox;
 
@@ -47,6 +44,9 @@ namespace SQLTrainer
             index++;
         }
 
+        /// <summary>
+        /// Метод обновляющий данные в таблицах.
+        /// </summary>
         public void ReloadTables()
         {
             DataTable DT = func.GetTable(Table1CB.SelectedItem.ToString());
@@ -62,20 +62,26 @@ namespace SQLTrainer
             Environment.Exit(0);
         }
 
-
         private void Execute_Click(object sender, RoutedEventArgs e)
         {
 
             DataTable DT = func.ExecuteStatement(SQLStatement.Text);
-            Table3DG.ItemsSource = DT.DefaultView;
-            ReloadTables();
+            //Если запрос не предполагает возвращения данных, значит он что-то изменяет и нужно обновить таблицы
+            if (DT.Rows.Count == 0)
+            {
+                ReloadTables();
+            }
+            else//В противном случае, нужно вывести результат запроса в 3 таблицу
+            {
+                Table3DG.ItemsSource = DT.DefaultView;
+            }
         }
 
         private void ReturnToDefault_Click(object sender, RoutedEventArgs e)
         {
             func.ReturnToDefault();
-            //ReloadTables();
         }
+
         private void Table2CB_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ComboBox comboBox = (ComboBox)sender;
@@ -84,6 +90,7 @@ namespace SQLTrainer
 
             Table2DG.ItemsSource = DT.DefaultView;
         }
+
         private void Table1CB_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ComboBox comboBox = (ComboBox)sender;
@@ -93,9 +100,5 @@ namespace SQLTrainer
             Table1DG.ItemsSource = DT.DefaultView;
         }
 
-        private void SQLStatement_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            SQLStatement.Text = "";
-        }
     }
 }
