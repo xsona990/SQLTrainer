@@ -24,6 +24,7 @@ namespace SQLTrainer
         internal GeneralFunctionality()
         {
             FirstTimeLaunch();//При каждом создании обьекта класса, посредством метода проверяем есть ли БД.
+
         }
 
         /// <summary>
@@ -68,8 +69,9 @@ namespace SQLTrainer
                     CloseConnection();
                 }
             }
-            catch (SQLiteException)
+            catch (SQLiteException ex)
             {
+                MainWindow.ShowException(ex.Message);
             }
             return ResultTable;
         }
@@ -94,10 +96,9 @@ namespace SQLTrainer
                     CloseConnection();
                 }
             }
-            catch (SQLiteException)
+            catch (SQLiteException ex)
             {
-
-                throw;
+                MainWindow.ShowException(ex.Message);
             }
             return Table;
         }
@@ -115,13 +116,14 @@ namespace SQLTrainer
                     command.ExecuteNonQuery();
                     if (CloseConnection() == true)
                     {
-                        FirstTimeLaunch();
+                        FirstTimeLaunch(true);
 
                     }
                 }
             }
-            catch (SQLiteException)
+            catch (SQLiteException ex)
             {
+                MainWindow.ShowException(ex.Message);
             }
         }
         /// <summary>
@@ -148,9 +150,9 @@ namespace SQLTrainer
                     CloseConnection();
                 }
             }
-            catch (SQLiteException)
+            catch (SQLiteException ex)
             {
-                throw;
+                MainWindow.ShowException(ex.Message);
             }
             return DataBaseNames;
         }
@@ -160,44 +162,49 @@ namespace SQLTrainer
         /// Если их нет, создает и заполняет необходимыми данными.
         /// </summary>
         /// <returns>Возвращает true только в том случае, если есть база и необходимые таблицы.</returns>
-        private void FirstTimeLaunch()
+        private void FirstTimeLaunch(bool isReturn = false)
         {
             if (!File.Exists(DatabaseName))
             {
                 SQLiteConnection.CreateFile(DatabaseName);
             }
-            try
+            if (isReturn == true)//Необходимо для того, что бы дублирующиеся данные в таблицу не добавлялись при каждом запуске.
             {
-                if (OpenConnection() == true)
-                {
-                    command = connection.CreateCommand();
-                    command.CommandText = "CREATE TABLE IF NOT EXISTS `users` (`userid`	INTEGER NOT " +
-                        "NULL PRIMARY KEY AUTOINCREMENT, `username`	TEXT); " +
-                        "CREATE TABLE IF NOT EXISTS`userdata` (`phoneid` INTEGER NOT NULL PRIMARY " +
-                        "KEY AUTOINCREMENT,`userid`	INTEGER NOT NULL, `phonenumber`	INTEGER NOT NULL); " +
-                        "CREATE TABLE IF NOT EXISTS `userrooms` (`roomid` INTEGER NOT NULL PRIMARY " +
-                        "KEY AUTOINCREMENT, `phoneid` INTEGER NOT NULL, `roomnumber` INTEGER NOT NULL);";
-                    command.ExecuteNonQuery();
-                    command = connection.CreateCommand();
-                    command.CommandText = "INSERT INTO users ('username') VALUES ('foo'); " +
-                        "INSERT INTO users('username') VALUES('bar'); " +
-                        "INSERT INTO users('username') VALUES('baz'); " +
-                        "INSERT INTO users('username') VALUES('qux'); " +
-                        "INSERT INTO userdata('userid', 'phonenumber') VALUES('2', '200'); " +
-                        "INSERT INTO userdata('userid', 'phonenumber') VALUES('4', '201'); " +
-                        "INSERT INTO userdata('userid', 'phonenumber') VALUES('3', '202'); " +
-                        "INSERT INTO userdata('userid', 'phonenumber') VALUES('1', '203'); " +
-                        "INSERT INTO userrooms('phoneid', 'roomnumber') VALUES('4', '30'); " +
-                        "INSERT INTO userrooms('phoneid', 'roomnumber') VALUES('1', '32'); " +
-                        "INSERT INTO userrooms('phoneid', 'roomnumber') VALUES('2', '35'); " +
-                        "INSERT INTO userrooms('phoneid', 'roomnumber') VALUES('3', '50'); ";
-                    command.ExecuteNonQuery();
 
-                    CloseConnection();
+                try
+                {
+                    if (OpenConnection() == true)
+                    {
+                        command = connection.CreateCommand();
+                        command.CommandText = "CREATE TABLE IF NOT EXISTS `users` (`userid`	INTEGER NOT " +
+                            "NULL PRIMARY KEY AUTOINCREMENT, `username`	TEXT); " +
+                            "CREATE TABLE IF NOT EXISTS`userdata` (`phoneid` INTEGER NOT NULL PRIMARY " +
+                            "KEY AUTOINCREMENT,`userid`	INTEGER NOT NULL, `phonenumber`	INTEGER NOT NULL); " +
+                            "CREATE TABLE IF NOT EXISTS `userrooms` (`roomid` INTEGER NOT NULL PRIMARY " +
+                            "KEY AUTOINCREMENT, `phoneid` INTEGER NOT NULL, `roomnumber` INTEGER NOT NULL);";
+                        command.ExecuteNonQuery();
+                        command = connection.CreateCommand();
+                        command.CommandText = "INSERT INTO users ('username') VALUES ('foo'); " +
+                            "INSERT INTO users('username') VALUES('bar'); " +
+                            "INSERT INTO users('username') VALUES('baz'); " +
+                            "INSERT INTO users('username') VALUES('qux'); " +
+                            "INSERT INTO userdata('userid', 'phonenumber') VALUES('2', '200'); " +
+                            "INSERT INTO userdata('userid', 'phonenumber') VALUES('4', '201'); " +
+                            "INSERT INTO userdata('userid', 'phonenumber') VALUES('3', '202'); " +
+                            "INSERT INTO userdata('userid', 'phonenumber') VALUES('1', '203'); " +
+                            "INSERT INTO userrooms('phoneid', 'roomnumber') VALUES('4', '30'); " +
+                            "INSERT INTO userrooms('phoneid', 'roomnumber') VALUES('1', '32'); " +
+                            "INSERT INTO userrooms('phoneid', 'roomnumber') VALUES('2', '35'); " +
+                            "INSERT INTO userrooms('phoneid', 'roomnumber') VALUES('3', '50'); ";
+                        command.ExecuteNonQuery();
+
+                        CloseConnection();
+                    }
                 }
-            }
-            catch (SQLiteException)
-            {
+                catch (SQLiteException ex)
+                {
+                    MainWindow.ShowException(ex.Message);
+                }
             }
         }
 
@@ -220,9 +227,9 @@ namespace SQLTrainer
                     return false;
                 }
             }
-            catch (SQLiteException)
+            catch (SQLiteException ex)
             {
-
+                MainWindow.ShowException(ex.Message);
                 return false;
             }
 
@@ -246,9 +253,9 @@ namespace SQLTrainer
                     return false;
                 }
             }
-            catch (SQLiteException)
+            catch (SQLiteException ex)
             {
-
+                MainWindow.ShowException(ex.Message);
                 return false;
             }
         }

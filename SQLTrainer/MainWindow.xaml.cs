@@ -80,6 +80,7 @@ namespace SQLTrainer
         private void ReturnToDefault_Click(object sender, RoutedEventArgs e)
         {
             func.ReturnToDefault();
+            ReloadTables();
         }
 
         private void Table2CB_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -100,5 +101,9 @@ namespace SQLTrainer
             Table1DG.ItemsSource = DT.DefaultView;
         }
 
+        public static void ShowException(string ex)
+        {
+            MessageBox.Show("Внимание! " + ex.ToString());
+        }
     }
 }
