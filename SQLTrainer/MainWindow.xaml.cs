@@ -49,10 +49,18 @@ namespace SQLTrainer
         /// </summary>
         public void ReloadTables()
         {
-            DataTable DT = func.GetTable(Table1CB.SelectedItem.ToString());
-            Table1DG.ItemsSource = DT.DefaultView;
-             DT = func.GetTable(Table2CB.SelectedItem.ToString());
-            Table2DG.ItemsSource = DT.DefaultView;
+            try
+            {
+                DataTable DT = func.GetTable(Table1CB.SelectedItem.ToString());
+                Table1DG.ItemsSource = DT.DefaultView;
+                DT = func.GetTable(Table2CB.SelectedItem.ToString());
+                Table2DG.ItemsSource = DT.DefaultView;
+            }
+            catch (NullReferenceException)
+            {
+                ShowException("Нет возможности работать с БД!");
+            }
+            
 
         }
 
@@ -77,6 +85,11 @@ namespace SQLTrainer
             }
         }
 
+        /// <summary>
+        /// Обработчик кнопки который вызывает пересоздание таблиц в базе, и обновление ЮИ
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ReturnToDefault_Click(object sender, RoutedEventArgs e)
         {
             func.ReturnToDefault();
